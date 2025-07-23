@@ -1,0 +1,86 @@
+# Project Name/output
+TARGET=myCProgram
+
+# Directories
+SRCDIR = src
+OBJDIR = obj
+INCDIR = includes
+BINDIR = bin
+INCLUDES = -I$(INCDIR)
+
+# Compiler and flags
+CC = gcc
+CFLAGS = -Wall -Wextra -std=c99 $(INCLUDES)
+LDFLAGS =
+LIBS =
+
+# Debug or release configuration
+DEBUG ?= 0
+ifeq ($(DEBUG), 1)
+	CFLAGS += -g -DDBUG
+else
+	CFLAGS += -O2 -DNDEBUG
+endif
+
+# Find all source files
+SOURCES = $(wildcard $(SRCDIR)/*.c)
+OBJECTS = $(SOURCES:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
+
+# Default
+all: $(BINDIR)/$(TARGET)
+
+# Create Binary
+$(BINDIR)/$(TARGET): $(OBJECTS) | $(BINDER)
+	$(CC) $(OBJECTS) -o $@ $(LDFLAGS) $(LIBS)
+# Compile source files
+(OBJDIR)/%.o: $(SRCDIR)/%.c | $(OBJDIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+# Create dirs
+$(OBJDIR):
+	mkdir -p $(OBJDIR)
+
+$(BINDIR):
+	mkdir -p $(BINDIR)
+
+# Clean build files
+clean:
+	rm -rf $(OBJDIR) $(BINDIR)
+
+# Debug Makefile
+debug_info:
+	@echo "INCDIR   $(INCDIR)"
+	@echo "SRCDIR   $(SRCDIR)"
+	@echo "OBJDIR   $(OBJDIR)"
+	@echo "INCLUDES $(INCLUDES)"
+	@echo "SOURCES: $(SOURCES)"
+	@echo "OBJECTS: $(OBJECTS)"
+	@echo "TARGET:  $(TARGET)"
+
+# Rebuild
+rebuild: clean all
+
+# Show help
+help:
+	@echo "$(TARGET) - Build options"
+	@echo ""
+	@echo "Usage: make [Target]"
+	@echo ""
+	@echo "Targets:"
+	@echo ""
+	@echo " all        Build the project (default)"
+	@echo " clean      Remove all the build files"
+	@echo " rebuild    Clean then Build"
+	@echo " debug_info Show build config"
+	@echo " help       Show this help"
+	@echo ""
+	@echo " Options:"
+	@echo ""
+	@echo " DEBUG=1    Build with debug symbols"
+	@echo " LIBS='..'  - Add libraries (e.g., LIBS='-lm -lpthread')"
+
+# Prevent make from deleting intermediate files
+.PRECIOUS: $(OBJDIR)/%.o
+
+# Declare phony targets
+.PHONY: all rebuild help clean debug_info
+
