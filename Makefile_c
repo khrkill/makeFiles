@@ -30,10 +30,10 @@ OBJECTS = $(SOURCES:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
 all: $(BINDIR)/$(TARGET)
 
 # Create Binary
-$(BINDIR)/$(TARGET): $(OBJECTS) | $(BINDER)
+$(BINDIR)/$(TARGET): $(OBJECTS) | $(BINDIR)
 	$(CC) $(OBJECTS) -o $@ $(LDFLAGS) $(LIBS)
 # Compile source files
-(OBJDIR)/%.o: $(SRCDIR)/%.c | $(OBJDIR)
+$(OBJDIR)/%.o: $(SRCDIR)/%.c | $(OBJDIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 # Create dirs
 $(OBJDIR):
